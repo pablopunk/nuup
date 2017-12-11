@@ -26,6 +26,12 @@ npm install -g nuup
 $ nuup [path, minor, major]
 ```
 
+## To do
+
+* Before actions, check if there are commits since last version ([commits-between](https://github.com/egoist/commits-between))
+* `git add package.json && git commit -m <version>`
+* `git push && npm publish`
+
 
 ## License
 
