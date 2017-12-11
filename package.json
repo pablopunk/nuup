@@ -1,0 +1,44 @@
+{
+  "name": "nuup",
+  "description": "Yet another npm publish. For me.",
+  "version": "1.0.0",
+  "author": "Pablo Varela <pablovarela182@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/pablopunk/nuup/issues",
+    "email": "pablovarela182@gmail.com"
+  },
+  "contributors": [
+    "Pablo Varela <pablovarela182@gmail.com>"
+  ],
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "is-git-clean": "^1.1.0",
+    "mri": "^1.1.0",
+    "semver-regex": "^1.0.0"
+  },
+  "devDependencies": {
+    "standard": "*"
+  },
+  "homepage": "https://github.com/pablopunk/nuup",
+  "keywords": [
+    "miny",
+    "nuup",
+    "npm",
+    "publish",
+    "package",
+    "semver",
+    "version",
+    "update",
+    "upgrade"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pablopunk/nuup"
+  },
+  "scripts": {
+    "lint": "standard",
+    "test": "npm run lint"
+  }
+}
