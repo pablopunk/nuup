@@ -10,6 +10,8 @@
   <i>Yet another npm publish</i>
 </p>
 
+> WIP. Don't use yet.
+
 
 ## Install
 
