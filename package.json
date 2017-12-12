@@ -1,7 +1,7 @@
 {
   "name": "nuup",
   "description": "Yet another npm publish. For me.",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "main": "cli.js",
   "bin": {
     "nuup": "cli.js"
