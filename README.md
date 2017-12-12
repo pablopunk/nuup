@@ -24,6 +24,8 @@ npm install -g nuup
 $ nuup [path, minor, major]
 ```
 
+![screenshot](https://github.com/pablopunk/art/raw/master/nuup/screenshot.gif)
+
 
 ## License
 
