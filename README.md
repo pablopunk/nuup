@@ -1,6 +1,8 @@
 # nuup
 
 <p align="center">
+  <a href="https://travis-ci.org/pablopunk/nuup"><img src="https://img.shields.io/travis/pablopunk/nuup.svg" /> </a>
+  <a href="https://codecov.io/gh/pablopunk/nuup"><img src="https://img.shields.io/codecov/c/github/pablopunk/nuup.svg" /> </a>
   <a href="https://standardjs.com"><img src="https://img.shields.io/badge/code%20style-standard-06bf94.svg" /> </a>
   <a href="https://github.com/pablopunk/miny"><img src="https://img.shields.io/badge/made_with-miny-1eced8.svg" /> </a>
   <a href="https://www.npmjs.com/package/nuup"><img src="https://img.shields.io/npm/dt/nuup.svg" /></a>
