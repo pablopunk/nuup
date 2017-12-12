@@ -32,7 +32,7 @@ if (argc === 0) {
 // shouldn't run if git is not clean
 if (!isGitClean.sync()) {
   error('Please commit all files before publishing')
-  process.exit(1)
+  process.exit(0)
 }
 
 // run all actions
