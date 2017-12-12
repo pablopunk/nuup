@@ -2,6 +2,10 @@
   "name": "nuup",
   "description": "Yet another npm publish. For me.",
   "version": "1.0.0",
+  "main": "index.js",
+  "bin": {
+    "nuup": "index.js"
+  },
   "author": "Pablo Varela <pablovarela182@gmail.com>",
   "bugs": {
     "url": "https://github.com/pablopunk/nuup/issues",
@@ -35,7 +39,6 @@
     "upgrade"
   ],
   "license": "MIT",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/pablopunk/nuup"
