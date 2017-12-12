@@ -23,7 +23,7 @@ npm install -g nuup
 ## Usage
 
 ```sh
-$ nuup [path, minor, major]
+$ nuup [patch, minor, major]
 ```
 
 ![screenshot](https://github.com/pablopunk/art/raw/master/nuup/screenshot.gif)
