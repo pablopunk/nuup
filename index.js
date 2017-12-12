@@ -29,11 +29,11 @@ async function cli (args) {
   }
 
   // run all actions
-  return commands.map(a => {
-    actions
+  commands.map(async a => {
+    await actions
       .run(a, process.env.PWD)
-      .then(() => happy(`${a} version published. Yay!`))
       .catch(err => error(err))
+    happy(`${a} version published. Yay!`)
   })
 }
 
