@@ -14,7 +14,7 @@ test('publishes patch by default', async t => {
     echo '{ "version": "0.0.0" }' > package.json &&
     git add -A &&
     git commit -m "Test" &&
-    ../cli.js
+    ../index.js
   `)
   t.regex(stdout, /Updated version in package.json 0.0.0 => 0.0.1/)
   t.regex(stdout, /Version completed/)
@@ -31,7 +31,7 @@ test('publishes minor version', async t => {
     echo '{ "version": "0.0.0" }' > package.json &&
     git add -A &&
     git commit -m "Test" &&
-    ../cli.js minor
+    ../index.js minor
   `)
   t.regex(stdout, /Updated version in package.json 0.0.0 => 0.1.0/)
 })
@@ -47,7 +47,7 @@ test('publishes major version', async t => {
     echo '{ "version": "0.0.0" }' > package.json &&
     git add -A &&
     git commit -m "Test" &&
-    ../cli.js major
+    ../index.js major
   `)
   t.regex(stdout, /Updated version in package.json 0.0.0 => 1.0.0/)
 })
@@ -63,11 +63,11 @@ test('publishes two versions', async t => {
     echo '{ "version": "0.0.0" }' > package.json &&
     git add -A &&
     git commit -m "First version" &&
-    ../cli.js major &&
+    ../index.js major &&
     echo test >> test.txt &&
     git add -A &&
     git commit -m "Second version" &&
-    ../cli.js major
+    ../index.js major
   `)
   t.regex(stdout, /Updated version in package.json 0.0.0 => 1.0.0/)
   t.regex(stdout, /Updated version in package.json 1.0.0 => 2.0.0/)
@@ -84,8 +84,8 @@ test('fails without commits between tags', async t => {
     echo '{ "version": "0.0.0" }' > package.json &&
     git add -A &&
     git commit -m "First version" &&
-    ../cli.js major &&
-    ../cli.js major
+    ../index.js major &&
+    ../index.js major
   `)
   t.regex(stderr, /There are no commits since version 1.0.0/)
 })
@@ -101,7 +101,7 @@ test('fails with more than 1 action', async t => {
     echo '{ "version": "0.0.0" }' > package.json &&
     git add -A &&
     git commit -m "Test" &&
-    ../cli.js asd
+    ../index.js asd
   `)
   t.regex(stderr, /Error: Unknown action "asd"/)
 })
@@ -113,7 +113,7 @@ test('fails with uncommited files', async t => {
     cd tmp &&
     git init &&
     echo '{ "version": "0.0.0" }' > package.json &&
-    ../cli.js minor
+    ../index.js minor
   `)
   t.regex(stderr, /Please commit all files before publishing/)
 })
@@ -124,7 +124,7 @@ test('fails with too many arguments', async t => {
     mkdir tmp &&
     cd tmp &&
     git init &&
-    ../cli.js asd xyz
+    ../index.js asd xyz
   `)
   t.regex(stderr, /Number of actions \(2\) is more than allowed: 1/)
 })

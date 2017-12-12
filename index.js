@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict'
 
 const mri = require('mri')
@@ -37,4 +39,4 @@ async function cli (args) {
   })
 }
 
-module.exports = cli
+cli(process.argv.slice(2))

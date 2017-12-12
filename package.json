@@ -2,9 +2,9 @@
   "name": "nuup",
   "description": "Yet another npm publish. For me.",
   "version": "2.3.4",
-  "main": "cli.js",
+  "main": "index.js",
   "bin": {
-    "nuup": "cli.js"
+    "nuup": "index.js"
   },
   "author": "Pablo Varela <pablovarela182@gmail.com>",
   "bugs": {
