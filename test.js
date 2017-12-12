@@ -78,3 +78,14 @@ test('fails with uncommited files', async t => {
   `)
   t.regex(stderr, /Please commit all files before publishing/)
 })
+
+test('fails with too many arguments', async t => {
+  exe('rm -rf tmp')
+  const { stderr } = exe(`
+    mkdir tmp &&
+    cd tmp &&
+    git init &&
+    ../index.js asd xyz
+  `)
+  t.regex(stderr, /Number of actions \(2\) is more than allowed: 1/)
+})

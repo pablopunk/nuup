@@ -16,7 +16,7 @@ const argc = commands.length
 
 if (argc > actions.max) {
   error(`Number of actions (${argc}) is more than allowed: ${actions.max}`)
-  process.exit(1)
+  process.exit(0)
 }
 
 if (argc === 0) {
