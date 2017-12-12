@@ -52,6 +52,44 @@ test('publishes major version', async t => {
   t.regex(stdout, /Updated version in package.json 0.0.0 => 1.0.0/)
 })
 
+test('publishes two versions', async t => {
+  exe('rm -rf tmp')
+  const { stdout } = exe(`
+    mkdir tmp &&
+    cd tmp &&
+    git init &&
+    git config user.email "my@email.com" &&
+    git config user.name "My Name" &&
+    echo '{ "version": "0.0.0" }' > package.json &&
+    git add -A &&
+    git commit -m "First version" &&
+    ../cli.js major &&
+    echo test >> test.txt &&
+    git add -A &&
+    git commit -m "Second version" &&
+    ../cli.js major
+  `)
+  t.regex(stdout, /Updated version in package.json 0.0.0 => 1.0.0/)
+  t.regex(stdout, /Updated version in package.json 1.0.0 => 2.0.0/)
+})
+
+test('fails without commits between tags', async t => {
+  exe('rm -rf tmp')
+  const { stderr } = exe(`
+    mkdir tmp &&
+    cd tmp &&
+    git init &&
+    git config user.email "my@email.com" &&
+    git config user.name "My Name" &&
+    echo '{ "version": "0.0.0" }' > package.json &&
+    git add -A &&
+    git commit -m "First version" &&
+    ../cli.js major &&
+    ../cli.js major
+  `)
+  t.regex(stderr, /There are no commits since version 1.0.0/)
+})
+
 test('fails with more than 1 action', async t => {
   exe('rm -rf tmp')
   const { stderr } = exe(`
