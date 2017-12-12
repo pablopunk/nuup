@@ -11,8 +11,8 @@ const { error, happy } = require('./lib/log')
 const args = process.argv.slice(2)
 
 // parse input
-const flags = mri(args)
-const argc = flags._.length
+const commands = mri(args)._
+const argc = commands.length
 
 if (argc > actions.max) {
   error(`Number of actions (${argc}) is more than allowed: ${actions.max}`)
@@ -36,7 +36,7 @@ if (!isGitClean.sync()) {
 }
 
 // run all actions
-flags._.map(a => {
+commands.map(a => {
   actions
     .run(a, process.env.PWD)
     .then(() => happy(`${a} version published. Yay!`))
