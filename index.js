@@ -41,7 +41,7 @@ async function cli (args) {
   }
 
   // shouldn't run if git is not clean
-  if (!isGitClean.sync()) {
+  if (!await isGitClean()) {
     error('Please commit all files before publishing')
     return
   }
