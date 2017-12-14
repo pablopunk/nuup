@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <i>Yet another npm publish.</i>
+  <i>Yet another npm publish with superpowers.</i>
 </p>
 
 
