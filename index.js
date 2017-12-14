@@ -4,8 +4,16 @@
 
 const mri = require('mri')
 const isGitClean = require('is-git-clean')
+const { shell } = require('execa')
 const actions = require('./lib/actions')
 const { error, happy } = require('./lib/log')
+
+const behindRemoteRegex = /Your branch is behind/
+
+async function isRemoteAhead (dirname) {
+  const { stdout } = shell('git fetch && git status', { cwd: dirname })
+  return behindRemoteRegex.test(stdout)
+}
 
 async function cli (args) {
   const commands = mri(args)._
@@ -27,6 +35,11 @@ async function cli (args) {
   // shouldn't run if git is not clean
   if (!isGitClean.sync()) {
     error('Please commit all files before publishing')
+    return
+  }
+
+  if (await isRemoteAhead()) {
+    error('Remote contains changes you don\'t have yet, please `git pull` before using nuup')
     return
   }
 
