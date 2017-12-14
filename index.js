@@ -8,11 +8,15 @@ const { shell } = require('execa')
 const actions = require('./lib/actions')
 const { error, happy } = require('./lib/log')
 
-const behindRemoteRegex = /Your branch is behind/
+const behindRemoteRegex = [
+  /Your branch is behind/,
+  /Your branch .* have diverged/
+]
 
 async function isRemoteAhead (dirname) {
   const { stdout } = shell('git fetch && git status', { cwd: dirname })
-  return behindRemoteRegex.test(stdout)
+  const dirty = behindRemoteRegex.map(reg => reg.test(stdout))
+  return dirty.includes(true)
 }
 
 async function cli (args) {
