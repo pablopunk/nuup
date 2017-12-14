@@ -14,8 +14,9 @@ const behindRemoteRegex = [
 ]
 
 async function isRemoteAhead (dirname) {
-  const { stdout } = shell('git fetch && git status', { cwd: dirname })
+  const { stdout } = await shell('git fetch && git status', { cwd: dirname })
   const dirty = behindRemoteRegex.map(reg => reg.test(stdout))
+
   return dirty.includes(true)
 }
 
