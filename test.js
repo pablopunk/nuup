@@ -12,7 +12,7 @@ function createRepoAndExecuteAction (action) {
     git config receive.denyCurrentBranch updateInstead &&
     echo test >> test && git add test &&
     git commit -m test &&
-    cd .. && git clone remote repo &&
+    cd .. && git clone remote repo 2>&1 &&
     cd repo &&
     git config user.email "my@email.com" &&
     git config user.name "My Name" &&
@@ -24,25 +24,28 @@ function createRepoAndExecuteAction (action) {
 }
 
 test('publishes patch by default', async t => {
-  const { stdout } = createRepoAndExecuteAction('')
+  const { stdout, stderr } = createRepoAndExecuteAction('')
   t.regex(stdout, /Updated version in package.json 0.0.0 => 0.0.1/)
   t.regex(stdout, /Version completed/)
+  t.falsy(stderr)
 })
 
 test('publishes minor version', async t => {
-  const { stdout } = createRepoAndExecuteAction('minor')
+  const { stdout, stderr } = createRepoAndExecuteAction('minor')
   t.regex(stdout, /Updated version in package.json 0.0.0 => 0.1.0/)
   t.regex(stdout, /minor version published/)
+  t.falsy(stderr)
 })
 
 test('publishes major version', async t => {
-  const { stdout } = createRepoAndExecuteAction('major')
+  const { stdout, stderr } = createRepoAndExecuteAction('major')
   t.regex(stdout, /Updated version in package.json 0.0.0 => 1.0.0/)
   t.regex(stdout, /major version published/)
+  t.falsy(stderr)
 })
 
 test('publishes two versions', async t => {
-  const { stdout } = exe(`
+  const { stdout, stderr } = exe(`
     rm -rf tmp &&
     mkdir -p tmp/remote &&
     cd tmp/remote &&
@@ -50,7 +53,7 @@ test('publishes two versions', async t => {
     git config receive.denyCurrentBranch updateInstead &&
     echo test >> test && git add test &&
     git commit -m test && cd .. &&
-    git clone remote repo && cd repo &&
+    git clone remote repo 2>&1 && cd repo &&
     git config user.email "my@email.com" &&
     git config user.name "My Name" &&
     echo '{ "version": "0.0.0" }' > package.json &&
@@ -64,6 +67,7 @@ test('publishes two versions', async t => {
   `)
   t.regex(stdout, /Updated version in package.json 0.0.0 => 1.0.0/)
   t.regex(stdout, /Updated version in package.json 1.0.0 => 2.0.0/)
+  t.falsy(stderr)
 })
 
 test('fails without commits between tags', async t => {
