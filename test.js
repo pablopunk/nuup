@@ -1,3 +1,4 @@
+const { existsSync } = require('fs')
 const test = require('ava').serial
 const { shellSync } = require('execa')
 
@@ -122,4 +123,10 @@ test('fails when the remote is ahead of repo', async t => {
     ${cli}
   `)
   t.regex(stderr, /Remote contains changes you don't have yet, please `git pull` before using/)
+})
+
+test('creates package-lock.json', async t => {
+  createRepoAndExecuteAction('')
+  const exists = existsSync('./tmp/repo/package-lock.json')
+  t.true(exists)
 })
