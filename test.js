@@ -27,7 +27,7 @@ function createRepoAndExecuteAction (action) {
 test('publishes patch by default', async t => {
   const { stdout, stderr } = createRepoAndExecuteAction('')
   t.regex(stdout, /Updated version in package.json 0.0.0 => 0.0.1/)
-  t.regex(stdout, /Version completed/)
+  t.regex(stdout, /Version published/)
   t.falsy(stderr)
 })
 
@@ -42,6 +42,13 @@ test('publishes major version', async t => {
   const { stdout, stderr } = createRepoAndExecuteAction('major')
   t.regex(stdout, /Updated version in package.json 0.0.0 => 1.0.0/)
   t.regex(stdout, /major version published/)
+  t.falsy(stderr)
+})
+
+test('publishes custom version', async t => {
+  const { stdout, stderr } = createRepoAndExecuteAction('8.4.2')
+  t.regex(stdout, /Updated version in package.json 0.0.0 => 8.4.2/)
+  t.regex(stdout, /8.4.2 version published/)
   t.falsy(stderr)
 })
 

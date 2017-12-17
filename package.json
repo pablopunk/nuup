@@ -19,6 +19,7 @@
     "commits-between": "^0.2.0",
     "execa": "^0.8.0",
     "is-git-clean": "^1.1.0",
+    "is-semver": "^1.0.7",
     "mri": "^1.1.0",
     "write-json-file": "^2.3.0"
   },

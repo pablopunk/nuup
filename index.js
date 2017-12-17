@@ -44,7 +44,7 @@ async function cli (args) {
     await actions
       .runDefault(process.env.PWD)
       .catch(err => error(err))
-    happy('Version completed. Yay!')
+    happy('Version published. Yay!')
     return
   }
 
