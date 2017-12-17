@@ -23,11 +23,25 @@ npm install -g nuup
 ## Usage
 
 ```sh
-$ nuup [patch, minor, major]
+$ nuup [patch, minor, major, <version>]
 ```
 
 ![screenshot](https://github.com/pablopunk/art/raw/master/nuup/screenshot.gif)
 
+### Examples
+
+```sh
+$ nuup # default action is patch
+0.0.0 => 0.0.1
+$ nuup patch
+0.0.1 => 0.0.2
+$ nuup minor
+0.0.2 => 0.1.0
+$ nuup major
+0.1.0 => 1.0.0
+$ nuup 9.8.7
+1.0.0 => 9.8.7
+```
 
 ## License
 
