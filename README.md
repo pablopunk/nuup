@@ -12,6 +12,7 @@
   <i>Yet another npm publish with superpowers.</i>
 </p>
 
+*nuup* takes care of changing the version in your `package.json`: **commit**, **push**, and **publish**.
 
 ## Install
 
