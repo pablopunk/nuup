@@ -31,7 +31,7 @@ async function checkGitClean (dirname) {
   }
 }
 
-async function performActions (commands, dirname, isDefault = false) {
+async function performActions (commands, dirname, isDefault) {
   if (isDefault) {
     return actions.runDefault(dirname)
   }
