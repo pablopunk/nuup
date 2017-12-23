@@ -25,35 +25,27 @@ function createRepoAndExecuteAction (action) {
 }
 
 test('publishes patch by default', async t => {
-  const { stdout, stderr } = createRepoAndExecuteAction('')
-  t.regex(stdout, /Updated version in package.json 0.0.0 => 0.0.1/)
-  t.regex(stdout, /Version published/)
-  t.falsy(stderr)
+  const { stdout } = createRepoAndExecuteAction('')
+  t.regex(stdout, /0.0.0 to 0.0.1/)
 })
 
 test('publishes minor version', async t => {
-  const { stdout, stderr } = createRepoAndExecuteAction('minor')
-  t.regex(stdout, /Updated version in package.json 0.0.0 => 0.1.0/)
-  t.regex(stdout, /minor version published/)
-  t.falsy(stderr)
+  const { stdout } = createRepoAndExecuteAction('minor')
+  t.regex(stdout, /0.0.0 to 0.1.0/)
 })
 
 test('publishes major version', async t => {
-  const { stdout, stderr } = createRepoAndExecuteAction('major')
-  t.regex(stdout, /Updated version in package.json 0.0.0 => 1.0.0/)
-  t.regex(stdout, /major version published/)
-  t.falsy(stderr)
+  const { stdout } = createRepoAndExecuteAction('major')
+  t.regex(stdout, /0.0.0 to 1.0.0/)
 })
 
 test('publishes custom version', async t => {
-  const { stdout, stderr } = createRepoAndExecuteAction('8.4.2')
-  t.regex(stdout, /Updated version in package.json 0.0.0 => 8.4.2/)
-  t.regex(stdout, /8.4.2 version published/)
-  t.falsy(stderr)
+  const { stdout } = createRepoAndExecuteAction('8.4.2')
+  t.regex(stdout, /0.0.0 to 8.4.2/)
 })
 
 test('publishes two versions', async t => {
-  const { stdout, stderr } = exe(`
+  const { stdout } = exe(`
     rm -rf tmp &&
     mkdir -p tmp/remote &&
     cd tmp/remote &&
@@ -73,25 +65,24 @@ test('publishes two versions', async t => {
     git commit -m "Second version" &&
     ${cli} major
   `)
-  t.regex(stdout, /Updated version in package.json 0.0.0 => 1.0.0/)
-  t.regex(stdout, /Updated version in package.json 1.0.0 => 2.0.0/)
-  t.falsy(stderr)
+  t.regex(stdout, /0.0.0 to 1.0.0/)
+  t.regex(stdout, /1.0.0 to 2.0.0/)
 })
 
 test('fails without commits between tags', async t => {
   // execute index.js twice
-  const { stderr } = createRepoAndExecuteAction(`major &&
+  const { stdout } = createRepoAndExecuteAction(`major &&
     ${cli}`)
-  t.regex(stderr, /There are no commits since version 1.0.0/)
+  t.regex(stdout, /There are no commits since version 1.0.0/)
 })
 
 test('fails with unknown action', async t => {
-  const { stderr } = createRepoAndExecuteAction('foo')
-  t.regex(stderr, /Error: Unknown action "foo"/)
+  const { stdout } = createRepoAndExecuteAction('foo')
+  t.regex(stdout, /Unknown action "foo"/)
 })
 
 test('fails with uncommited files', async t => {
-  const { stderr } = exe(`
+  const { stdout } = exe(`
     rm -rf tmp &&
     mkdir -p tmp/remote &&
     cd tmp/remote &&
@@ -103,16 +94,16 @@ test('fails with uncommited files', async t => {
     echo '{ "version": "0.0.0" }' > package.json &&
     ${cli} minor
   `)
-  t.regex(stderr, /Please commit all files before publishing/)
+  t.regex(stdout, /Please commit all files before publishing/)
 })
 
 test('fails with too many arguments', async t => {
-  const { stderr } = createRepoAndExecuteAction('foo bar')
-  t.regex(stderr, /Number of actions \(2\) is more than allowed: 1/)
+  const { stdout } = createRepoAndExecuteAction('foo bar')
+  t.regex(stdout, /Number of actions \(2\) is more than allowed: 1/)
 })
 
 test('fails when the remote is ahead of repo', async t => {
-  const { stderr } = exe(`
+  const { stdout } = exe(`
     rm -rf tmp &&
     mkdir -p tmp/remote &&
     cd tmp/remote && git init &&
@@ -129,7 +120,22 @@ test('fails when the remote is ahead of repo', async t => {
     cd ../repo &&
     ${cli}
   `)
-  t.regex(stderr, /Remote contains changes you don't have yet, please `git pull` before using/)
+  t.regex(stdout, /Remote contains changes you don't have yet, please `git pull` before using/)
+})
+
+test('fails if there\'s no package with version', async t => {
+  const { stdout } = exe(`
+    rm -rf tmp &&
+    mkdir -p tmp/remote &&
+    cd tmp/remote && git init &&
+    git config receive.denyCurrentBranch updateInstead &&
+    echo '{ "name": "nope" }' >> package.json &&
+    git add package.json && git commit -m package &&
+    cd .. && git clone remote repo &&
+    cd repo &&
+    ${cli}
+  `)
+  t.regex(stdout, /Can't find a package version/)
 })
 
 test('creates package-lock.json', async t => {

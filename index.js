@@ -5,56 +5,64 @@
 const mri = require('mri')
 const isGitClean = require('is-git-clean')
 const { shell } = require('execa')
+const ora = require('ora')
 const actions = require('./lib/actions')
-const { error, happy } = require('./lib/log')
 
 const behindRemoteRegex = [
   /Your branch is behind/,
   /Your branch .* have diverged/
 ]
 
-async function isRemoteAhead (dirname) {
+let spinner
+
+async function checkRemoteAhead (dirname) {
   const { stdout } = await shell('git fetch && git status', { cwd: dirname })
   const dirty = behindRemoteRegex.map(reg => reg.test(stdout))
 
-  return dirty.includes(true)
+  if (dirty.includes(true)) {
+    throw new Error('Remote contains changes you don\'t have yet, please `git pull` before using nuup')
+  }
+}
+
+async function checkGitClean (dirname) {
+  const isClean = await isGitClean(dirname)
+  if (!isClean) {
+    throw new Error('Please commit all files before publishing')
+  }
+}
+
+async function performActions (commands, dirname, isDefault = false) {
+  if (isDefault) {
+    return actions.runDefault(dirname)
+  }
+  for (let a of commands) {
+    await actions.run(a, process.env.PWD)
+  }
 }
 
 async function cli (args) {
+  const dirname = process.env.PWD
   const commands = mri(args)._
   const argc = commands.length
 
+  spinner = ora({ text: 'Started nuup!', stream: process.stdout })
   if (argc > actions.max) {
-    error(`Number of actions (${argc}) is more than allowed: ${actions.max}`)
-    return
+    throw new Error(`Number of actions (${argc}) is more than allowed: ${actions.max}`)
   }
 
-  // shouldn't run if git is not clean
-  if (!await isGitClean()) {
-    error('Please commit all files before publishing')
-    return
-  }
-
-  if (await isRemoteAhead()) {
-    error('Remote contains changes you don\'t have yet, please `git pull` before using nuup')
-    return
-  }
-
-  if (argc === 0) {
-    await actions
-      .runDefault(process.env.PWD)
-      .catch(err => error(err))
-    happy('Version published. Yay!')
-    return
-  }
-
-  // run all actions
-  commands.map(async a => {
-    await actions
-      .run(a, process.env.PWD)
-      .catch(err => error(err))
-    happy(`${a} version published. Yay!`)
-  })
+  spinner = ora({ text: 'Checking if git is clean', stream: process.stdout }).start()
+  return checkGitClean(dirname)
+    .then(() => {
+      spinner.succeed('Git is clean')
+      spinner = ora({ text: 'Checking if remote is clean', stream: process.stdout }).start()
+    })
+    .then(checkRemoteAhead)
+    .then(() => {
+      spinner.succeed('Remote is clean')
+    })
+    .then(() => performActions(commands, dirname, argc === 0))
+    .catch(err => spinner.fail(err.message))
 }
 
 cli(process.argv.slice(2))
+  .catch(err => spinner.fail(err))
