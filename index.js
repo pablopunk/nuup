@@ -5,15 +5,13 @@
 const mri = require('mri')
 const isGitClean = require('is-git-clean')
 const { shell } = require('execa')
-const ora = require('ora')
+const spinner = require('./lib/spinner')
 const actions = require('./lib/actions')
 
 const behindRemoteRegex = [
   /Your branch is behind/,
   /Your branch .* have diverged/
 ]
-
-let spinner
 
 async function checkRemoteAhead (dirname) {
   const { stdout } = await shell('git fetch && git status', { cwd: dirname })
@@ -45,24 +43,21 @@ async function cli (args) {
   const commands = mri(args)._
   const argc = commands.length
 
-  spinner = ora({ text: 'Started nuup!', stream: process.stdout })
   if (argc > actions.max) {
     throw new Error(`Number of actions (${argc}) is more than allowed: ${actions.max}`)
   }
 
-  spinner = ora({ text: 'Checking if git is clean', stream: process.stdout }).start()
+  spinner.start('Checking if git is clean')
   return checkGitClean(dirname)
     .then(() => {
-      spinner.succeed('Git is clean')
-      spinner = ora({ text: 'Checking if remote is clean', stream: process.stdout }).start()
+      spinner.stop('Git is clean')
+      spinner.start('Checking if remote is clean')
     })
     .then(checkRemoteAhead)
-    .then(() => {
-      spinner.succeed('Remote is clean')
-    })
+    .then(() => spinner.stop('Remote is clean'))
     .then(() => performActions(commands, dirname, argc === 0))
     .catch(err => spinner.fail(err.message))
 }
 
 cli(process.argv.slice(2))
-  .catch(err => spinner.fail(err))
+  .catch(err => spinner.fail(err.message))
