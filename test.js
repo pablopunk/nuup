@@ -81,7 +81,7 @@ test('fails with unknown action', async t => {
   t.regex(stdout, /Unknown action "foo"/)
 })
 
-test('fails with uncommited files', async t => {
+test('fails with uncommitted files', async t => {
   const { stdout } = exe(`
     rm -rf tmp &&
     mkdir -p tmp/remote &&
