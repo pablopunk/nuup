@@ -25,9 +25,9 @@
   },
   "devDependencies": {
     "ava": "*",
-    "standard": "*",
     "codecov": "*",
-    "nyc": "*"
+    "nyc": "*",
+    "xo": "^0.18.2"
   },
   "homepage": "https://github.com/pablopunk/nuup",
   "keywords": [
@@ -53,9 +53,13 @@
     "type": "git",
     "url": "https://github.com/pablopunk/nuup"
   },
+  "xo": {
+    "space": true,
+    "semicolon": false
+  },
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "lint": "standard",
+    "lint": "xo",
     "test": "npm run lint && npm run test-coverage",
     "test-coverage": "nyc ava"
   }
