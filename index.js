@@ -53,12 +53,8 @@ async function cli(args) {
 
   spinner.start('Checking if git is clean')
   return checkGitClean(dirname)
-    .then(() => {
-      spinner.stop('Git is clean')
-      spinner.start('Checking if remote is clean')
-    })
     .then(checkRemoteAhead)
-    .then(() => spinner.stop('Remote is clean'))
+    .then(() => spinner.stop('Git is clean'))
     .then(() => performActions(commands, dirname, argc === 0))
     .catch(err => spinner.fail(err.message))
 }
