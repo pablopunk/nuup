@@ -143,3 +143,19 @@ test('creates package-lock.json', async t => {
   const exists = existsSync('./tmp/repo/package-lock.json')
   t.true(exists)
 })
+
+test('custom version should care about commits', async t => {
+  const {stdout} = exe(`
+    rm -rf tmp &&
+    mkdir -p tmp/remote &&
+    cd tmp/remote && git init &&
+    git config receive.denyCurrentBranch updateInstead &&
+    echo '{ "version": "1.0.0" }' > package.json &&
+    git add package.json && git commit -m package &&
+    cd .. && git clone remote repo &&
+    cd repo &&
+    ${cli} &&
+    ${cli} 2.0.0
+  `)
+  t.regex(stdout, /1.0.1 to 2.0.0/)
+})
