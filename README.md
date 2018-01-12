@@ -44,6 +44,17 @@ $ nuup 9.8.7
 1.0.0 => 9.8.7
 ```
 
+#### Options
+
+* Skip `npm publish`
+
+You can use `nuup` just to bump package.json version without performing `npm publish`. Just use `--no-npm` option or `-n` shortcut.
+
+```sh
+$ nuup minor --no-npm
+$ nuup 1.2.3 -n
+```
+
 ## License
 
 MIT
