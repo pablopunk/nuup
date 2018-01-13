@@ -6,18 +6,21 @@ const pkg = require('./package.json')
 const exe = shellSync
 const cli = '../../index.js'
 
+const createAndCloneRepo = `
+  rm -rf tmp &&
+  mkdir -p tmp/remote &&
+  cd tmp/remote && git init &&
+  git config receive.denyCurrentBranch updateInstead &&
+  git config user.email "my@email.com" &&
+  git config user.name "My Name" &&
+  echo test >> test && git add test &&
+  git commit -m test &&
+  cd .. && git clone remote repo 2>&1 &&
+  cd repo`
+
 function createRepoAndExecuteAction(action) {
   return exe(`
-    rm -rf tmp &&
-    mkdir -p tmp/remote &&
-    cd tmp/remote && git init &&
-    git config receive.denyCurrentBranch updateInstead &&
-    echo test >> test && git add test &&
-    git commit -m test &&
-    cd .. && git clone remote repo 2>&1 &&
-    cd repo &&
-    git config user.email "my@email.com" &&
-    git config user.name "My Name" &&
+    ${createAndCloneRepo} &&
     echo '{ "version": "0.0.0" }' > package.json &&
     git add -A &&
     git commit -m "Test" &&
@@ -47,16 +50,7 @@ test('publishes custom version', async t => {
 
 test('publishes two versions', async t => {
   const {stdout} = exe(`
-    rm -rf tmp &&
-    mkdir -p tmp/remote &&
-    cd tmp/remote &&
-    git init &&
-    git config receive.denyCurrentBranch updateInstead &&
-    echo test >> test && git add test &&
-    git commit -m test && cd .. &&
-    git clone remote repo 2>&1 && cd repo &&
-    git config user.email "my@email.com" &&
-    git config user.name "My Name" &&
+    ${createAndCloneRepo} &&
     echo '{ "version": "0.0.0" }' > package.json &&
     git add -A &&
     git commit -m "First version" &&
@@ -84,14 +78,7 @@ test('fails with unknown action', async t => {
 
 test('fails with uncommitted files', async t => {
   const {stdout} = exe(`
-    rm -rf tmp &&
-    mkdir -p tmp/remote &&
-    cd tmp/remote &&
-    git init &&
-    echo test >> test && git add test &&
-    git commit -m test && cd .. &&
-    git clone remote repo &&
-    cd repo &&
+    ${createAndCloneRepo} &&
     echo '{ "version": "0.0.0" }' > package.json &&
     ${cli} minor
   `)
@@ -126,14 +113,9 @@ test('fails when the remote is ahead of repo', async t => {
 
 test('fails if there\'s no package with version', async t => {
   const {stdout} = exe(`
-    rm -rf tmp &&
-    mkdir -p tmp/remote &&
-    cd tmp/remote && git init &&
-    git config receive.denyCurrentBranch updateInstead &&
-    echo '{ "name": "nope" }' >> package.json &&
-    git add package.json && git commit -m package &&
-    cd .. && git clone remote repo &&
-    cd repo &&
+    ${createAndCloneRepo} &&
+    echo '{ "name": "nope" }' > package.json &&
+    git add package.json && git commit -m test &&
     ${cli}
   `)
   t.regex(stdout, /Can't find a package version/)
@@ -147,14 +129,9 @@ test('creates package-lock.json', async t => {
 
 test('custom version should care about commits', async t => {
   const {stdout} = exe(`
-    rm -rf tmp &&
-    mkdir -p tmp/remote &&
-    cd tmp/remote && git init &&
-    git config receive.denyCurrentBranch updateInstead &&
+    ${createAndCloneRepo} &&
     echo '{ "version": "1.0.0" }' > package.json &&
-    git add package.json && git commit -m package &&
-    cd .. && git clone remote repo &&
-    cd repo &&
+    git add package.json && git commit -m test &&
     ${cli} &&
     ${cli} 2.0.0
   `)
@@ -162,32 +139,12 @@ test('custom version should care about commits', async t => {
 })
 
 test('does not publish with -n flag', async t => {
-  const {stdout} = exe(`
-    rm -rf tmp &&
-    mkdir -p tmp/remote &&
-    cd tmp/remote && git init &&
-    git config receive.denyCurrentBranch updateInstead &&
-    echo '{ "version": "1.0.0" }' > package.json &&
-    git add package.json && git commit -m package &&
-    cd .. && git clone remote repo &&
-    cd repo &&
-    ${cli} -n
-  `)
+  const {stdout} = createRepoAndExecuteAction('1.2.3 -n')
   t.notRegex(stdout, /Published/)
 })
 
 test('just print version with -v flag', async t => {
-  const {stdout} = exe(`
-    rm -rf tmp &&
-    mkdir -p tmp/remote &&
-    cd tmp/remote && git init &&
-    git config receive.denyCurrentBranch updateInstead &&
-    echo '{ "version": "1.0.0" }' > package.json &&
-    git add package.json && git commit -m package &&
-    cd .. && git clone remote repo &&
-    cd repo &&
-    ${cli} -v
-  `)
+  const {stdout} = createRepoAndExecuteAction('1.2.3 -v')
   t.regex(stdout, new RegExp(`Version ${pkg.version}`, 'i'))
   t.notRegex(stdout, /Git is/)
 })
