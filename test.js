@@ -148,3 +148,9 @@ test('just print version with -v flag', async t => {
   t.regex(stdout, new RegExp(`Version ${pkg.version}`, 'i'))
   t.notRegex(stdout, /Git is/)
 })
+
+test('make sure it pushes tags', async t => {
+  createRepoAndExecuteAction('1.2.3')
+  const {stdout} = exe('cd tmp/remote && git tag')
+  t.regex(stdout, /1.2.3/)
+})
