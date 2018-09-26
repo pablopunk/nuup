@@ -24,9 +24,9 @@
     "write-json-file": "^2.3.0"
   },
   "devDependencies": {
-    "ava": "*",
-    "codecov": "*",
-    "nyc": "*",
+    "ava": "^0.25.0",
+    "codecov": "^3.1.0",
+    "nyc": "^13.1.0",
     "standard": "^12.0.1"
   },
   "homepage": "https://github.com/pablopunk/nuup",
