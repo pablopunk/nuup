@@ -4,7 +4,7 @@
 
 const mri = require('mri')
 const isGitClean = require('is-git-clean')
-const {shell} = require('execa')
+const { shell } = require('execa')
 const pkg = require('./package.json')
 const spinner = require('./lib/spinner')
 const actions = require('./lib/actions')
@@ -14,8 +14,8 @@ const behindRemoteRegex = [
   /Your branch .* have diverged/
 ]
 
-async function checkRemoteAhead(dirname) {
-  const {stdout} = await shell('git fetch && git status', {cwd: dirname})
+async function checkRemoteAhead (dirname) {
+  const { stdout } = await shell('git fetch && git status', { cwd: dirname })
   const dirty = behindRemoteRegex.map(reg => reg.test(stdout))
 
   if (dirty.includes(true)) {
@@ -23,14 +23,14 @@ async function checkRemoteAhead(dirname) {
   }
 }
 
-async function checkGitClean(dirname) {
+async function checkGitClean (dirname) {
   const isClean = await isGitClean(dirname)
   if (!isClean) {
     throw new Error('Please commit all files before publishing')
   }
 }
 
-async function performActions(commands, options) {
+async function performActions (commands, options) {
   options = Object.assign({
     dirname: process.env.PWD,
     isDefault: false,
@@ -38,25 +38,25 @@ async function performActions(commands, options) {
   }, options)
 
   if (options.isDefault) {
-    return actions.runDefault({dirname: options.dirname, noNpm: options.noNpm})
+    return actions.runDefault({ dirname: options.dirname, noNpm: options.noNpm })
   }
 
   const promises = []
   for (const a of commands) {
-    promises.push(actions.run(a, {dirname: options.dirname, noNpm: options.noNpm}))
+    promises.push(actions.run(a, { dirname: options.dirname, noNpm: options.noNpm }))
   }
 
   return Promise.all(promises)
 }
 
-function parseFlags(args) {
+function parseFlags (args) {
   const version = (args.version || args.v)
   const noNpm = (args['no-npm'] || args.n)
 
-  return {version, noNpm}
+  return { version, noNpm }
 }
 
-async function cli(argv) {
+async function cli (argv) {
   const dirname = process.env.PWD
   const args = mri(argv)
   const commands = args._
@@ -76,7 +76,7 @@ async function cli(argv) {
   return checkGitClean(dirname)
     .then(checkRemoteAhead)
     .then(() => spinner.stop('Git is clean'))
-    .then(() => performActions(commands, {isDefault: commands.length === 0, noNpm: flags.noNpm}))
+    .then(() => performActions(commands, { isDefault: commands.length === 0, noNpm: flags.noNpm }))
     .catch(err => spinner.fail(err.message))
 }
 

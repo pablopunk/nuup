@@ -1,6 +1,6 @@
-const {existsSync} = require('fs')
+const { existsSync } = require('fs')
 const test = require('ava').serial
-const {shellSync} = require('execa')
+const { shellSync } = require('execa')
 const pkg = require('./package.json')
 
 const exe = shellSync
@@ -18,7 +18,7 @@ const createAndCloneRepo = `
   cd .. && git clone remote repo 2>&1 &&
   cd repo`
 
-function createRepoAndExecuteAction(action) {
+function createRepoAndExecuteAction (action) {
   return exe(`
     ${createAndCloneRepo} &&
     echo '{ "version": "0.0.0" }' > package.json &&
@@ -29,27 +29,27 @@ function createRepoAndExecuteAction(action) {
 }
 
 test('publishes patch by default', async t => {
-  const {stdout} = createRepoAndExecuteAction('')
+  const { stdout } = createRepoAndExecuteAction('')
   t.regex(stdout, /0.0.0 to 0.0.1/)
 })
 
 test('publishes minor version', async t => {
-  const {stdout} = createRepoAndExecuteAction('minor')
+  const { stdout } = createRepoAndExecuteAction('minor')
   t.regex(stdout, /0.0.0 to 0.1.0/)
 })
 
 test('publishes major version', async t => {
-  const {stdout} = createRepoAndExecuteAction('major')
+  const { stdout } = createRepoAndExecuteAction('major')
   t.regex(stdout, /0.0.0 to 1.0.0/)
 })
 
 test('publishes custom version', async t => {
-  const {stdout} = createRepoAndExecuteAction('8.4.2')
+  const { stdout } = createRepoAndExecuteAction('8.4.2')
   t.regex(stdout, /0.0.0 to 8.4.2/)
 })
 
 test('publishes two versions', async t => {
-  const {stdout} = exe(`
+  const { stdout } = exe(`
     ${createAndCloneRepo} &&
     echo '{ "version": "0.0.0" }' > package.json &&
     git add -A &&
@@ -66,18 +66,18 @@ test('publishes two versions', async t => {
 
 test('fails without commits between tags', async t => {
   // Execute index.js twice
-  const {stdout} = createRepoAndExecuteAction(`major &&
+  const { stdout } = createRepoAndExecuteAction(`major &&
     ${cli}`)
   t.regex(stdout, /There are no commits since version 1.0.0/)
 })
 
 test('fails with unknown action', async t => {
-  const {stdout} = createRepoAndExecuteAction('foo')
+  const { stdout } = createRepoAndExecuteAction('foo')
   t.regex(stdout, /Unknown action "foo"/)
 })
 
 test('fails with uncommitted files', async t => {
-  const {stdout} = exe(`
+  const { stdout } = exe(`
     ${createAndCloneRepo} &&
     echo '{ "version": "0.0.0" }' > package.json &&
     ${cli} minor
@@ -86,12 +86,12 @@ test('fails with uncommitted files', async t => {
 })
 
 test('fails with too many arguments', async t => {
-  const {stdout} = createRepoAndExecuteAction('foo bar')
+  const { stdout } = createRepoAndExecuteAction('foo bar')
   t.regex(stdout, /Number of actions \(2\) is more than allowed: 1/)
 })
 
 test('fails when the remote is ahead of repo', async t => {
-  const {stdout} = exe(`
+  const { stdout } = exe(`
     rm -rf tmp &&
     mkdir -p tmp/remote &&
     cd tmp/remote && git init &&
@@ -112,7 +112,7 @@ test('fails when the remote is ahead of repo', async t => {
 })
 
 test('fails if there\'s no package with version', async t => {
-  const {stdout} = exe(`
+  const { stdout } = exe(`
     ${createAndCloneRepo} &&
     echo '{ "name": "nope" }' > package.json &&
     git add package.json && git commit -m test &&
@@ -128,7 +128,7 @@ test('creates package-lock.json', async t => {
 })
 
 test('custom version should care about commits', async t => {
-  const {stdout} = exe(`
+  const { stdout } = exe(`
     ${createAndCloneRepo} &&
     echo '{ "version": "1.0.0" }' > package.json &&
     git add package.json && git commit -m test &&
@@ -139,18 +139,18 @@ test('custom version should care about commits', async t => {
 })
 
 test('does not publish with -n flag', async t => {
-  const {stdout} = createRepoAndExecuteAction('1.2.3 -n')
+  const { stdout } = createRepoAndExecuteAction('1.2.3 -n')
   t.notRegex(stdout, /Published/)
 })
 
 test('just print version with -v flag', async t => {
-  const {stdout} = createRepoAndExecuteAction('1.2.3 -v')
+  const { stdout } = createRepoAndExecuteAction('1.2.3 -v')
   t.regex(stdout, new RegExp(`Version ${pkg.version}`, 'i'))
   t.notRegex(stdout, /Git is/)
 })
 
 test('make sure it pushes tags', async t => {
   createRepoAndExecuteAction('1.2.3')
-  const {stdout} = exe('cd tmp/remote && git tag')
+  const { stdout } = exe('cd tmp/remote && git tag')
   t.regex(stdout, /1.2.3/)
 })
