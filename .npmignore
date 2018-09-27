@@ -1,0 +1,11 @@
+coverage*
+.editorconfig
+.gitignore
+.nyc_output
+node_modules
+.tern-project
+test.js
+tmp
+.travis.yml
+
+
