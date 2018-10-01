@@ -31,6 +31,7 @@ function createRepoAndExecuteAction (action) {
 test('publishes patch by default', async t => {
   const { stdout } = createRepoAndExecuteAction('')
   t.regex(stdout, /0.0.0 to 0.0.1/)
+  t.regex(stdout, /Published to npm/)
 })
 
 test('publishes minor version', async t => {
