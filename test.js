@@ -1,3 +1,4 @@
+const path = require('path')
 const { existsSync } = require('fs')
 const test = require('ava').serial
 const { shellSync } = require('execa')
@@ -18,10 +19,11 @@ const createAndCloneRepo = `
   cd .. && git clone remote repo 2>&1 &&
   cd repo`
 
-function createRepoAndExecuteAction (action) {
+function createRepoAndExecuteAction (action, extra = 'echo') {
   return exe(`
     ${createAndCloneRepo} &&
     echo '{ "version": "0.0.0" }' > package.json &&
+    ${extra} &&
     git add -A &&
     git commit -m "Test" &&
     ${cli} ${action}
@@ -122,10 +124,26 @@ test('fails if there\'s no package with version', async t => {
   t.regex(stdout, /Can't find a package version/)
 })
 
-test('creates package-lock.json', async t => {
+test('does not create package-lock.json', async t => {
   createRepoAndExecuteAction('')
-  const exists = existsSync('./tmp/repo/package-lock.json')
+
+  const lockFile = path.join(__dirname, 'tmp/repo/package-lock.json')
+  const exists = existsSync(lockFile)
+  t.false(exists)
+})
+
+test('updates existing package-lock.json', async t => {
+  createRepoAndExecuteAction(
+    '',
+    'echo \'{"version": "0.0.0"}\' > package-lock.json'
+  )
+
+  const lockFile = path.join(__dirname, 'tmp/repo/package-lock.json')
+  const exists = existsSync(lockFile)
   t.true(exists)
+
+  const lock = require(lockFile)
+  t.is(lock.version, '0.0.1')
 })
 
 test('custom version should care about commits', async t => {
