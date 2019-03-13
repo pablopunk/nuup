@@ -27,7 +27,7 @@ npm install -g nuup
 $ nuup [patch, minor, major, <version>]
 ```
 
-![screenshot](https://github.com/pablopunk/art/raw/master/nuup/screenshot.gif)
+[![asciicast](https://asciinema.org/a/TmCFYO8SZ6t7K5S6DbSof6sNG.svg)](https://asciinema.org/a/TmCFYO8SZ6t7K5S6DbSof6sNG)
 
 ### Examples
 
