@@ -20,6 +20,12 @@
 npm install -g nuup
 ```
 
+Or just use it directly with `npx`:
+
+```sh
+npx nuup
+```
+
 
 ## Usage
 
